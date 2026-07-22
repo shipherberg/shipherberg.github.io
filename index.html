@@ -2,52 +2,273 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <!-- تنظیمات برای نمایش درست در موبایل -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مینی اپ من</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بنش</title>
     
-    <!-- اضافه کردن کتابخانه رسمی تلگرام -->
+    <!-- کتابخانه تلگرام -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
+    <!-- فونت زیبای وزیرمتن -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    
+    <!-- آیکون‌های FontAwesome برای زیبایی بصری -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* استفاده از رنگ‌های پیش‌فرض خود تلگرام برای هماهنگی با تم کاربر */
+        :root {
+            /* استفاده از متغیرهای رنگی تلگرام برای هماهنگی با تم کاربر */
+            --bg-color: var(--tg-theme-bg-color, #f4f5f7);
+            --text-color: var(--tg-theme-text-color, #222222);
+            --hint-color: var(--tg-theme-hint-color, #8e8e93);
+            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+            --primary-color: var(--tg-theme-button-color, #0088cc);
+            --buy-color: #10b981; /* سبز مدرن برای خرید */
+            --sell-color: #ef4444; /* قرمز مدرن برای فروش */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            font-family: Tahoma, sans-serif;
-            text-align: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             padding: 20px;
+            padding-bottom: 80px; /* فضای خالی برای دکمه اصلی تلگرام */
+        }
+
+        /* بخش هدر و خوش‌آمدگویی */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .user-greeting {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* کارت موجودی کل (می‌توانی بعداً با REST آپدیتش کنی) */
+        .balance-card {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .balance-card p {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+
+        .balance-card h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        /* دکمه‌های اصلی (خرید و فروش) */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .action-btn {
+            background-color: var(--card-bg);
+            border: none;
+            border-radius: 18px;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+
+        .action-btn i {
+            font-size: 1.8rem;
+        }
+
+        .btn-buy i { color: var(--buy-color); }
+        .btn-sell i { color: var(--sell-color); }
+
+        .action-btn span {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        /* لیست منوهای پایین (کیف پول، قوانین، پشتیبانی) */
+        .menu-list {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.1);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .menu-item:active {
+            background-color: rgba(128, 128, 128, 0.1);
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .icon-wallet { background-color: #3b82f6; }
+        .icon-security { background-color: #8b5cf6; }
+        .icon-support { background-color: #f59e0b; }
+
+        .menu-text {
+            flex-grow: 1;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .menu-arrow {
+            color: var(--hint-color);
+            font-size: 0.9rem;
         }
     </style>
 </head>
 <body>
 
-    <h1>سلام تلگرام! 🚀</h1>
-    <h2 id="greeting">در حال بارگذاری...</h2>
-    <p>این یک مینی اپ تست است.</p>
+    <!-- هدر و پروفایل کاربری -->
+    <div class="header">
+        <div class="user-greeting" id="userName">کاربر عزیز، خوش آمدی</div>
+        <div class="user-avatar">
+            <i class="fa-solid fa-user"></i>
+        </div>
+    </div>
+
+    <!-- بخش نمایشی موجودی (آماده اتصال به بک‌اند) -->
+    <div class="balance-card">
+        <p>موجودی تخمینی شما</p>
+        <h2>۰ <span style="font-size: 1.2rem; font-weight: 400;">تومان</span></h2>
+    </div>
+
+    <!-- دکمه‌های اصلی معاملاتی -->
+    <div class="action-grid">
+        <button class="action-btn btn-buy" onclick="handleAction('buy')">
+            <i class="fa-solid fa-arrow-down-long"></i>
+            <span>خرید رمز ارز</span>
+        </button>
+        <button class="action-btn btn-sell" onclick="handleAction('sell')">
+            <i class="fa-solid fa-arrow-up-long"></i>
+            <span>فروش رمز ارز</span>
+        </button>
+    </div>
+
+    <!-- لیست منوهای کاربردی -->
+    <div class="menu-list">
+        <div class="menu-item" onclick="handleAction('wallet')">
+            <div class="menu-icon icon-wallet"><i class="fa-solid fa-wallet"></i></div>
+            <div class="menu-text">کیف پول من</div>
+            <i class="fa-solid fa-chevron-left menu-arrow"></i>
+        </div>
+        
+        <div class="menu-item" onclick="handleAction('rules')">
+            <div class="menu-icon icon-security"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="menu-text">قوانین، حریم خصوصی و امنیت</div>
+            <i class="fa-solid fa-chevron-left menu-arrow"></i>
+        </div>
+        
+        <div class="menu-item" onclick="handleAction('support')">
+            <div class="menu-icon icon-support"><i class="fa-solid fa-headset"></i></div>
+            <div class="menu-text">تماس با پشتیبانی</div>
+            <i class="fa-solid fa-chevron-left menu-arrow"></i>
+        </div>
+    </div>
 
     <script>
-        // به تلگرام می‌گوییم که مینی اپ ما آماده نمایش است
-        window.Telegram.WebApp.ready();
+        // راه‌اندازی مینی اپ
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // باز کردن اپ در تمام صفحه
+        tg.ready();
 
-        // دریافت اطلاعات کاربری که مینی اپ را باز کرده است
-        const user = window.Telegram.WebApp.initDataUnsafe.user;
-        
-        if (user) {
-            document.getElementById('greeting').innerText = "خوش آمدی، " + user.first_name + " عزیز!";
-        } else {
-            document.getElementById('greeting').innerText = "خارج از محیط تلگرام باز شده است.";
+        // دریافت نام کاربر از تلگرام
+        const user = tg.initDataUnsafe?.user;
+        if (user && user.first_name) {
+            document.getElementById('userName').innerText = user.first_name + " عزیز، خوش آمدی";
         }
 
-        // تنظیم و نمایش دکمه اصلی تلگرام در پایین صفحه
-        window.Telegram.WebApp.MainButton.setText('ارسال به ربات');
-        window.Telegram.WebApp.MainButton.show();
+        // تابع برای مدیریت کلیک روی منوها و دکمه‌ها
+        function handleAction(action) {
+            // در اینجا با استفاده از JS می‌توانی با APIهای REST کیف پولت ارتباط بگیری
+            // یا صفحات را تغییر دهی. فعلا برای تست یک ویبره کوچک و ارسال دیتا قرار دادیم.
+            
+            tg.HapticFeedback.impactOccurred('light'); // ویبره ملایم (مخصوص موبایل)
 
-        // تعریف رویداد برای زمانی که کاربر دکمه اصلی را می‌فشارد
-        window.Telegram.WebApp.onEvent('mainButtonClicked', function() {
-            // ارسال یک پیام متنی به ربات و بستن مینی اپ
-            window.Telegram.WebApp.sendData("دکمه تایید فشرده شد!");
-        });
+            switch(action) {
+                case 'buy':
+                    tg.showAlert("به صفحه خرید منتقل می‌شوید.");
+                    break;
+                case 'sell':
+                    tg.showAlert("به صفحه فروش منتقل می‌شوید.");
+                    break;
+                case 'wallet':
+                    // مثال: ارسال درخواست به بک‌اند برای دریافت اطلاعات کیف پول
+                    tg.sendData("request_wallet_info");
+                    break;
+                case 'rules':
+                    tg.showAlert("نمایش قوانین و حریم خصوصی...");
+                    break;
+                case 'support':
+                    tg.openTelegramLink("https://t.me/YourSupportBot_or_Username");
+                    break;
+            }
+        }
     </script>
 </body>
 </html>
